@@ -28,3 +28,21 @@ class SquareAndCircle(Scene):
         square.set_fill(BLUE, opacity=0.5)
         square.next_to(circle, RIGHT, buff=0.5) # Setting the position of the square
         self.play(Create(circle), Create(square)) # Display the shapes
+
+class AnimatedSquareToCircle(Scene):
+    def construct(self):
+        circle = Circle()
+        square = Square()
+
+        self.play(Create(square)) # Display the square
+        self.play(square.animate.rotate(PI / 4)) # Rotate square as an animation
+        self.play(ReplacementTransform(square,circle)) # transforms the square into the circle as an animation
+        self.play(circle.animate.set_fill(PINK, opacity=0.5)) # Fills in the circle as an animation
+
+class DifferentRotations(Scene):
+    def construct(self):
+        left_square = Square(color=BLUE, fill_opacity=0.7).shift(2*LEFT)
+        right_square = Square(color=GREEN, fill_opacity=0.7).shift(2*RIGHT)
+        # self.play(left_square.animate.rotate(PI), Rotate(right_square, angle=PI), run_time=2)
+        self.play(Rotate(left_square, angle=(2*PI)), Rotate(right_square, angle=PI),run_time=2)
+        self.wait()
