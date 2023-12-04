@@ -46,3 +46,10 @@ class DifferentRotations(Scene):
         # self.play(left_square.animate.rotate(PI), Rotate(right_square, angle=PI), run_time=2)
         self.play(Rotate(left_square, angle=(2*PI)), Rotate(right_square, angle=PI),run_time=2)
         self.wait()
+
+class Movement(Scene):
+    def construct(self):
+        car = Square(color=TEAL, fill_opacity=0.8).shift(4*LEFT)
+        self.play(Create(car), run_time=4)
+        self.wait(2)
+        self.play(car.animate.shift(4*RIGHT), run_time=4)
