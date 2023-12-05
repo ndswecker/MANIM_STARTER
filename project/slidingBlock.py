@@ -22,12 +22,12 @@ class BaseBlock(Scene):
         base.to_edge(DOWN, buff=1).to_edge(LEFT, buff=1)
 
         # Place the slider to the far left
-        slider.to_edge(LEFT, buff=1)
-        slider.to_edge(DOWN, buff=RAMP_HEIGHT + 1)        
+        slider.to_edge(LEFT, buff=1).to_edge(DOWN, buff=RAMP_HEIGHT + 1)        
 
         # Place the Ramp and the slider on the scene
         self.play(Create(slider), Create(base))
         self.wait(1)
+        
         # Rotate the slider into the correct angle
         self.play(
             Rotate(
