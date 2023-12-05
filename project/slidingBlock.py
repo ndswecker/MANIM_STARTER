@@ -9,14 +9,13 @@ class BaseBlock(Scene):
         RAMP_BASE = 9
         RAMP_HYP = math.sqrt(RAMP_HEIGHT**2 + RAMP_BASE**2)
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
-        
 
         # Slider paramaterized
         SLIDER = 2.5
 
         RAMP_COORD = [[0,0,0], [RAMP_BASE,0,0], [0,RAMP_HEIGHT,0]]
 
-        base = Polygon(RAMP_COORD[0], RAMP_COORD[1], RAMP_COORD[2])
+        base = Polygon(*RAMP_COORD)
         slider = Square(side_length=SLIDER)
 
         # Place the base on in the bottom left corner
@@ -26,16 +25,26 @@ class BaseBlock(Scene):
         slider.to_edge(LEFT, buff=1)
         slider.to_edge(DOWN, buff=RAMP_HEIGHT + 1)        
 
-        # Place the 
-
+        # Place the Ramp and the slider on the scene
         self.play(Create(slider), Create(base))
         self.wait(1)
+        # Rotate the slider into the correct angle
         self.play(
             Rotate(
                 slider,
                 angle=-RAMP_ANGLES[1],
                 about_point=[-6,-3+RAMP_HEIGHT,0]
             )
+        )
+        self.wait(1)
+        
+        # Slider proceeds to bottom of ramp
+        self.play(
+            slider.animate.shift(
+                [ (RAMP_HYP - SLIDER) * math.cos(RAMP_ANGLES[1]),
+                  (RAMP_HYP - SLIDER) * -math.sin(RAMP_ANGLES[1]),
+                  0]
+                )
         )
         self.wait(2)
 
