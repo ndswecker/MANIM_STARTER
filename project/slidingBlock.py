@@ -5,8 +5,8 @@ class BaseBlock(Scene):
     def construct(self):
 
         # Ramp paramaterized
-        RAMP_HEIGHT = 5
-        RAMP_BASE = 7
+        RAMP_HEIGHT = 4
+        RAMP_BASE = 9
         RAMP_HYP = math.sqrt(RAMP_HEIGHT**2 + RAMP_BASE**2)
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
         
