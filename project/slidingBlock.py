@@ -11,7 +11,7 @@ class BaseBlock(Scene):
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
 
         # Slider paramaterized
-        SLIDER = 2.5
+        SLIDER = 1
         SLIDER_REF = [-6,-3 + RAMP_HEIGHT,0]
         OFFSET = (SLIDER * math.sin(RAMP_ANGLES[1]))/2
         RAMP_COORD = [[0,0,0], [RAMP_BASE,0,0], [0,RAMP_HEIGHT,0]]
@@ -21,7 +21,8 @@ class BaseBlock(Scene):
 
         # Direction Vectors
         vctX = Vector([1,0]).move_to([-6 + SLIDER/math.cos(RAMP_ANGLES[1]) + OFFSET, -3 + RAMP_HEIGHT, 0])
-        vctY = Vector([0,-1])
+        vctY = Vector([0,-1]).move_to([-6 + SLIDER/math.cos(RAMP_ANGLES[1]) + OFFSET, -3 + RAMP_HEIGHT, 0])
+        vctD = Vector([math.cos(RAMP_ANGLES[1]), -math.sin(RAMP_ANGLES[1]), 0]).move_to([-6 + SLIDER/math.cos(RAMP_ANGLES[1]) + OFFSET, -3 + RAMP_HEIGHT, 0])
 
         # Place the base on in the bottom left corner
         base.to_edge(DOWN, buff=1).to_edge(LEFT, buff=1)
@@ -30,7 +31,7 @@ class BaseBlock(Scene):
         slider.to_edge(LEFT, buff=1).to_edge(DOWN, buff=RAMP_HEIGHT + 1)        
 
         # Place the Ramp and the slider on the scene
-        self.play(Create(slider), Create(base), Create(vctX))
+        self.play(Create(slider), Create(base))
         self.wait(1)
 
         # Rotate the slider into the correct angle
@@ -41,15 +42,24 @@ class BaseBlock(Scene):
                 about_point=[*SLIDER_REF]
             )
         )
+        sliderCenter = slider.get_center
+        #self.play(Create(vctX), )
         self.wait(1)
+
+        # Add Directional vectors
+        self.play(Create(vctD),
+                  Create(vctX),
+                  Create(vctY), 
+                  vctX.animate.shift([0.5,0.5,0]),
+                  vctY.animate.shift([-1, -0.5, 0]))
+        self.wait(2)
+
+        group = Group(slider, vctD)
         
         # Slider proceeds to bottom of ramp
         self.play(
-            slider.animate.shift(
-                [ (RAMP_HYP - SLIDER) * math.cos(RAMP_ANGLES[1]),
-                  (RAMP_HYP - SLIDER) * -math.sin(RAMP_ANGLES[1]),
-                  0]
-                )
+            group.animate.shift([(RAMP_HYP - SLIDER) * math.cos(RAMP_ANGLES[1]),
+                  (RAMP_HYP - SLIDER) * -math.sin(RAMP_ANGLES[1]), 0])
         )
         self.wait(2)
 
