@@ -5,8 +5,8 @@ class BaseBlock(Scene):
     def construct(self):
 
         # Ramp paramaterized
-        RAMP_HEIGHT = 5
-        RAMP_BASE = 8
+        RAMP_HEIGHT = 4
+        RAMP_BASE = 9
         RAMP_HYP = math.sqrt(RAMP_HEIGHT**2 + RAMP_BASE**2)
         # Angles Start at 90 and go ccw
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
@@ -14,32 +14,33 @@ class BaseBlock(Scene):
         # Slider paramaterized
         SLIDER = 1
         SLIDER_REF = [-6,-3 + RAMP_HEIGHT,0]
-        # Slider vector components offset to adjust for slider size
-        OFFSET = (SLIDER * math.sin(RAMP_ANGLES[1]))/2
         slider = Square(side_length=SLIDER, fill_opacity=0.5)
 
-        # Base ramp consturcted from height and base length
-        RAMP_COORD = [[0,0,0], [RAMP_BASE,0,0], [0,RAMP_HEIGHT,0]]
+        # Base ramp consturcted from height and base length with 90 degree
+        # angle at corner: [-6, -3, 0]
+        RAMP_COORD = [[-6, -3, 0],
+                      [-6 + RAMP_BASE, -3,0],
+                      [-6, -3 + RAMP_HEIGHT, 0]]
         base = Polygon(*RAMP_COORD, fill_opacity=0.5)
         
         # Direction Vectors
-        lengthVector = 1
+        lengthVector = SLIDER
         vctX = Vector([lengthVector,0])
         vctY = Vector([0,-lengthVector])
-        vctD = Vector([math.cos(RAMP_ANGLES[1]), -math.sin(RAMP_ANGLES[1])])
+        vctD = Vector([math.cos(RAMP_ANGLES[1]) * lengthVector, -math.sin(RAMP_ANGLES[1]) * lengthVector])
 
-        # Place the base on in the bottom left corner
-        base.to_edge(DOWN, buff=1).to_edge(LEFT, buff=1)
-
-        # Place the slider to the far left
-        slider.to_edge(LEFT, buff=1).to_edge(DOWN, buff=RAMP_HEIGHT + 1)    
+        # Place the slider to the far left ontop of ramp
+        slider.move_to(SLIDER_REF, aligned_edge=DL)    
 
         # Background Plane
         planeBG = NumberPlane()
         self.add(planeBG)    
 
         # Place the Ramp and the slider on the scene
-        self.play(Create(slider), Create(base))
+        topCorner = Cross(scale_factor=0.1).move_to(base.get_critical_point(UL))
+        self.play(Create(slider),
+                  Create(base),
+                  Create(topCorner))
         self.wait(1)
 
         # Rotate the slider into the correct angle
@@ -50,27 +51,24 @@ class BaseBlock(Scene):
                 about_point=[*SLIDER_REF]
             )
         )
-
-        for d in [(0,0,0), UP, UR, RIGHT, DR, DOWN, DL, LEFT, UL]:
-            self.add(Cross(scale_factor=0.1).move_to(slider.get_critical_point(d)))
-
-        vctX.move_to(slider.get_critical_point((0,0,0))).shift(0.5*lengthVector*RIGHT)
-        vctD.move_to(slider.get_critical_point((0,0,0))).shift(0.5*lengthVector*RIGHT + (1/4)*lengthVector*DOWN)
-        vctY.move_to(slider.get_critical_point((0,0,0))).shift(0.5*lengthVector*DOWN)
-        self.add(vctX, vctD, vctY)
         self.wait(1)
+
+        """ for d in [(0,0,0), UP, UR, RIGHT, DR, DOWN, DL, LEFT, UL]:
+            self.add(Cross(scale_factor=0.1).move_to(slider.get_critical_point(d))) """
+
+        vctX.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(LEFT))
+        vctD.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(LEFT + UP))
+        vctY.move_to(slider.get_critical_point((0,0,0)), aligned_edge=((0,0,0) + UP))
+        
 
         # Add Directional vectors
         self.play(Create(vctD),
                   Create(vctX),
-                  Create(vctY), 
-                  vctX.animate.shift([0.5,0.5,0]),
-                  vctY.animate.shift([-1, -0.5, 0]))
+                  Create(vctY))
         self.wait(2)
 
-        group = Group(slider, vctD)
-        
         # Slider proceeds to bottom of ramp
+        group = Group(slider, vctD)
         self.play(
             group.animate.shift([(RAMP_HYP - SLIDER) * math.cos(RAMP_ANGLES[1]),
                   (RAMP_HYP - SLIDER) * -math.sin(RAMP_ANGLES[1]), 0])
