@@ -8,23 +8,25 @@ class BaseBlock(Scene):
         RAMP_HEIGHT = 5
         RAMP_BASE = 8
         RAMP_HYP = math.sqrt(RAMP_HEIGHT**2 + RAMP_BASE**2)
+        # Angles Start at 90 and go ccw
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
 
         # Slider paramaterized
         SLIDER = 1
         SLIDER_REF = [-6,-3 + RAMP_HEIGHT,0]
+        # Slider vector components offset to adjust for slider size
         OFFSET = (SLIDER * math.sin(RAMP_ANGLES[1]))/2
+        slider = Square(side_length=SLIDER, fill_opacity=0.5)
+
+        # Base ramp consturcted from height and base length
         RAMP_COORD = [[0,0,0], [RAMP_BASE,0,0], [0,RAMP_HEIGHT,0]]
-
-        base = Polygon(*RAMP_COORD)
-        slider = Square(side_length=SLIDER)
-
+        base = Polygon(*RAMP_COORD, fill_opacity=0.5)
+        
         # Direction Vectors
         lengthVector = 1
-        #vctX = Vector([1,0]).move_to([-6 + SLIDER/math.cos(RAMP_ANGLES[1]) + OFFSET, -3 + RAMP_HEIGHT, 0])
         vctX = Vector([lengthVector,0])
-        vctY = Vector([0,-lengthVector]).move_to([-6 + SLIDER/math.cos(RAMP_ANGLES[1]) + OFFSET, -3 + RAMP_HEIGHT, 0])
-        vctD = Vector([math.cos(RAMP_ANGLES[1]), -math.sin(RAMP_ANGLES[1]), 0]).move_to([-6 + SLIDER/math.cos(RAMP_ANGLES[1]) + OFFSET, -3 + RAMP_HEIGHT, 0])
+        vctY = Vector([0,-lengthVector])
+        vctD = Vector([math.cos(RAMP_ANGLES[1]), -math.sin(RAMP_ANGLES[1])])
 
         # Place the base on in the bottom left corner
         base.to_edge(DOWN, buff=1).to_edge(LEFT, buff=1)
