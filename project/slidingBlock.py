@@ -12,7 +12,7 @@ class BaseBlock(Scene):
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
 
         # Slider paramaterized
-        SLIDER = 1
+        SLIDER = 2
         SLIDER_REF = [-6,-3 + RAMP_HEIGHT,0]
         slider = Square(side_length=SLIDER, fill_opacity=0.5)
 
@@ -28,6 +28,7 @@ class BaseBlock(Scene):
         vctX = Vector([lengthVector,0])
         vctY = Vector([0,-lengthVector])
         vctD = Vector([math.cos(RAMP_ANGLES[1]) * lengthVector, -math.sin(RAMP_ANGLES[1]) * lengthVector])
+        vctN = Vector([-(lengthVector * math.sin(RAMP_ANGLES[1])), -(lengthVector * math.cos(RAMP_ANGLES[1]))])
 
         # Place the slider to the far left ontop of ramp
         slider.move_to(SLIDER_REF, aligned_edge=DL)    
@@ -59,12 +60,14 @@ class BaseBlock(Scene):
         vctX.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(LEFT))
         vctD.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(LEFT + UP))
         vctY.move_to(slider.get_critical_point((0,0,0)), aligned_edge=((0,0,0) + UP))
+        vctN.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(RIGHT + UP))
         
 
         # Add Directional vectors
         self.play(Create(vctD),
                   Create(vctX),
-                  Create(vctY))
+                  Create(vctY),
+                  Create(vctN))
         self.wait(2)
 
         # Slider proceeds to bottom of ramp
