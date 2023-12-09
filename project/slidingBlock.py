@@ -7,7 +7,6 @@ class BaseBlock(Scene):
         ACC_G = 9.8
         DENSITY = 0.1
 
-
         # Ramp paramaterized
         RAMP_HEIGHT = 3
         RAMP_BASE = 8
@@ -21,6 +20,9 @@ class BaseBlock(Scene):
         sliderMass = SLIDER**2 * DENSITY
         slider = Square(side_length=SLIDER, fill_opacity=0.5)
         sliderFG = ACC_G * sliderMass * math.sin(RAMP_ANGLES[1])
+        sliderFGVar = Variable(sliderFG, MathTex(r'F_g'), num_decimal_places=1).move_to([3,3,0])
+        sliderFGVar.label.set_color(WHITE)
+        sliderFGVar.value.set_color(RED)
 
         # Ramp consturcted from height and base length with 90 degree
         # angle at corner: [-6, -3, 0]
@@ -47,7 +49,7 @@ class BaseBlock(Scene):
         vctD2 = vctD.copy()
 
         # TEXT
-        forceGravityText = MathTex(r"F_g&", font_size=60).move_to((3,3,0), aligned_edge=UR)
+        #forceGravityText = MathTex(r"F_g&", font_size=60).move_to((3,3,0), aligned_edge=UR)
         # theta = MathTex(r'\theta').move_to(ramp.get_critical_point(DR), aligned_edge=(RIGHT + DOWN)).shift([-RAMP_BASE/8, 0.2, 0])
         theta = MathTex(r'\theta').move_to([RAMP_COORD[1][0] - RAMP_BASE/4 - 0.2 , RAMP_COORD[1][1] + 0.2,0])
         # DIMENSIONS
@@ -58,7 +60,7 @@ class BaseBlock(Scene):
         line1 = Line(start=RAMP_COORD[1], end=RAMP_COORD[2])
         line2 = Line(start=RAMP_COORD[1], end=RAMP_COORD[0])
         thetaArc = Angle(line1, line2, radius=(RAMP_BASE/4))
-        self.add(forceGravityText, rampHeightText, rampBaseText)
+        self.add(rampHeightText, rampBaseText)
 
         # Place the slider to the far left ontop of ramp
         slider.move_to(SLIDER_REF, aligned_edge=DL)      
@@ -77,7 +79,9 @@ class BaseBlock(Scene):
                 slider,
                 angle=-RAMP_ANGLES[1],
                 about_point=[*SLIDER_REF]
-            ), Create(thetaArc)
+            ),
+            Create(thetaArc),
+            Write(sliderFGVar)
         )
         self.add(theta)
         self.wait(1)
