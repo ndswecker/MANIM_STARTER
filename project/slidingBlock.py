@@ -9,14 +9,14 @@ class BaseBlock(Scene):
 
 
         # Ramp paramaterized
-        RAMP_HEIGHT = 2
-        RAMP_BASE = 7
+        RAMP_HEIGHT = 3
+        RAMP_BASE = 8
         RAMP_HYP = math.sqrt(RAMP_HEIGHT**2 + RAMP_BASE**2)
         # Angles Start at 90 and go ccw
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
 
         # Slider paramaterized
-        SLIDER = 1.5
+        SLIDER = 2
         SLIDER_REF = [-6,-3 + RAMP_HEIGHT,0]
         sliderMass = SLIDER**2 * DENSITY
         slider = Square(side_length=SLIDER, fill_opacity=0.5)
@@ -48,15 +48,17 @@ class BaseBlock(Scene):
 
         # TEXT
         forceGravityText = MathTex(r"F_g&", font_size=60).move_to((3,3,0), aligned_edge=UR)
-        theta = MathTex(r'\theta').move_to(ramp.get_critical_point(DR), aligned_edge=(RIGHT + DOWN)).shift([-RAMP_BASE/8, 0.2, 0])
+        # theta = MathTex(r'\theta').move_to(ramp.get_critical_point(DR), aligned_edge=(RIGHT + DOWN)).shift([-RAMP_BASE/8, 0.2, 0])
+        theta = MathTex(r'\theta').move_to([RAMP_COORD[1][0] - RAMP_BASE/4 - 0.2 , RAMP_COORD[1][1] + 0.2,0])
         # DIMENSIONS
         rampHeightText = Integer(number=RAMP_HEIGHT).move_to(ramp.get_critical_point(LEFT), aligned_edge=RIGHT).shift([-0.2,0,0])
         rampBaseText = Integer(number=RAMP_BASE).move_to(ramp.get_critical_point(DOWN), aligned_edge=UP).shift([0,-0.2,0])
+        
         # ANGLES
         line1 = Line(start=RAMP_COORD[1], end=RAMP_COORD[2])
         line2 = Line(start=RAMP_COORD[1], end=RAMP_COORD[0])
         thetaArc = Angle(line1, line2, radius=(RAMP_BASE/4))
-        self.add(forceGravityText, rampHeightText, rampBaseText, thetaArc, theta)
+        self.add(forceGravityText, rampHeightText, rampBaseText)
 
         # Place the slider to the far left ontop of ramp
         slider.move_to(SLIDER_REF, aligned_edge=DL)      
@@ -75,8 +77,9 @@ class BaseBlock(Scene):
                 slider,
                 angle=-RAMP_ANGLES[1],
                 about_point=[*SLIDER_REF]
-            )
+            ), Create(thetaArc)
         )
+        self.add(theta)
         self.wait(1)
 
         """ for d in [(0,0,0), UP, UR, RIGHT, DR, DOWN, DL, LEFT, UL]:
