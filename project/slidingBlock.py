@@ -4,12 +4,19 @@ from manim import *
 class BaseBlock(Scene):
     def construct(self):
 
+        # Color Palette
+        PEACHY = '#ffbe98'
+        YELLOWY = '#fed992'
+        BLUEY = '#b5ccda'
+        PERRY = '#5c7ca3'
+        ROSEY = '#d44934'
+
         ACC_G = 9.8
-        DENSITY = 0.1
+        DENSITY = 0.25
 
         # Ramp paramaterized
         RAMP_HEIGHT = 5
-        RAMP_BASE = 7
+        RAMP_BASE = 10
         RAMP_HYP = math.sqrt(RAMP_HEIGHT**2 + RAMP_BASE**2)
         # Angles Start at 90 and go ccw
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
@@ -18,16 +25,17 @@ class BaseBlock(Scene):
         SLIDER = 1.5
         SLIDER_REF = [-6,-3 + RAMP_HEIGHT,0]
         sliderMass = SLIDER**2 * DENSITY
-        slider = Square(side_length=SLIDER, fill_opacity=0.5)
+        slider = Square(side_length=SLIDER, fill_opacity=0.5, color=YELLOWY)
         sliderFGy = ACC_G * sliderMass
         sliderDispMag = -(ACC_G * sliderMass) * math.sin(RAMP_ANGLES[1])
+        sliderNormMag = -(ACC_G * sliderMass) * math.cos(RAMP_ANGLES[1])
 
         # Ramp consturcted from height and base length with 90 degree
         # angle at corner: [-6, -3, 0]
         RAMP_COORD = [[-6, -3, 0],
                       [-6 + RAMP_BASE, -3,0],
                       [-6, -3 + RAMP_HEIGHT, 0]]
-        ramp = Polygon(*RAMP_COORD, fill_opacity=0.5)
+        ramp = Polygon(*RAMP_COORD, fill_opacity=0.5, color=PEACHY)
 
         # Background Plane
         planeBG = NumberPlane(
@@ -42,21 +50,27 @@ class BaseBlock(Scene):
         lengthVector = SLIDER
         vctX = Vector([lengthVector,0])
         # Force of Gravity Vector, in negative Y direction
-        vctY = Vector([0,-(ACC_G * sliderMass)])
+        vctY = Vector([0,-(ACC_G * sliderMass)], color=PERRY)
         # Displacement Vector, and its copy to use for reference
         vctD = Vector([0, -(ACC_G * sliderMass) * math.sin(RAMP_ANGLES[1]), 0]).rotate(about_point=(slider.get_critical_point((0,0,0))), angle=(RAMP_ANGLES[2]))
-        vctD2 = vctD.copy()
+        vctD2 = vctD.copy().set_color(color=ROSEY)
         # Normal vector of slider on ramp
-        vctN = Vector([0, -(ACC_G * sliderMass) * math.cos(RAMP_ANGLES[1]), 0]).rotate(about_point=(slider.get_critical_point((0,0,0))), angle=-RAMP_ANGLES[1])
+        vctN = Vector([0, -(ACC_G * sliderMass) * math.cos(RAMP_ANGLES[1]), 0], color=YELLOWY).rotate(about_point=(slider.get_critical_point((0,0,0))), angle=-RAMP_ANGLES[1])
 
-        # TEXT 
+        # TEXT FORMULAE
         theta = MathTex(r'\theta').move_to([RAMP_COORD[1][0] - RAMP_BASE/4 - 0.2 , RAMP_COORD[1][1] + 0.2,0])
+        
         sliderFGVar = Variable(sliderFGy, MathTex(r'F_g (mg)'), num_decimal_places=1).move_to([4, 3 ,0])
         sliderFGVar.label.set_color(WHITE)
-        sliderFGVar.value.set_color(RED)
+        sliderFGVar.value.set_color(PERRY)
+
         displacementVar = Variable(-sliderDispMag, MathTex(r'F_D (mg*sin\theta)'), num_decimal_places=1).next_to(sliderFGVar, DOWN, aligned_edge=RIGHT)
         displacementVar.label.set_color(WHITE)
-        displacementVar.value.set_color(RED)
+        displacementVar.value.set_color(ROSEY)
+
+        normalVar = Variable(-sliderNormMag, MathTex(r'F_N (mg*cos\theta)'), num_decimal_places=1,).next_to(displacementVar, DOWN, aligned_edge=RIGHT)
+        normalVar.label.set_color(WHITE)
+        normalVar.value.set_color(YELLOWY)
 
         # DIMENSIONS of Ramp dispayed
         rampHeightText = Integer(number=RAMP_HEIGHT).move_to(ramp.get_critical_point(LEFT), aligned_edge=RIGHT).shift([-0.2,0,0])
@@ -85,7 +99,8 @@ class BaseBlock(Scene):
             ),
             Create(thetaArc),
             Write(sliderFGVar),
-            Write(displacementVar)
+            Write(displacementVar),
+            Write(normalVar)
         )
         self.add(theta)
         self.wait(1)
