@@ -12,7 +12,7 @@ class BaseBlock(Scene):
         ROSEY = '#d44934'
 
         ACC_G = 9.8
-        DENSITY = 0.25
+        DENSITY = 0.2
 
         # Ramp paramaterized
         RAMP_HEIGHT = 5
