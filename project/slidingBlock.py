@@ -105,14 +105,13 @@ class BaseBlock(Scene):
         slider.move_to(SLIDER_REF, aligned_edge=DL)      
 
         # Display the Ramp and the slider on the scene
-        self.play(Create(slider),
-                  Create(ramp),
-                  Write(rampHeightText),
-                  Write(rampBaseText))
+        self.play(
+            Create(slider),
+            Create(ramp),
+            Write(rampHeightText),
+            Write(rampBaseText),
+        )
         self.wait(1)
-
-        dot = Dot(point=ramp.get_vertices()[0])
-        self.play(Create(dot))
 
         # Rotate the slider into the correct angle
         self.play(
