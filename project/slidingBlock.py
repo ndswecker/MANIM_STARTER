@@ -15,15 +15,15 @@ class BaseBlock(Scene):
         DENSITY = 0.2
 
         # Ramp paramaterized
-        RAMP_HEIGHT = 4
-        RAMP_BASE = 9
+        RAMP_HEIGHT = 5
+        RAMP_BASE = 8
         RAMP_HYP = math.sqrt(RAMP_HEIGHT**2 + RAMP_BASE**2)
         # Angles Start at 90 and go ccw
         RAMP_ANGLES = [(PI/2), (math.acos(RAMP_BASE/RAMP_HYP)), (math.acos(RAMP_HEIGHT/RAMP_HYP))]
         RAMP_CORNER = [-6, -3, 0]
 
         # Slider paramaterized
-        SLIDER = 1
+        SLIDER = 1.25
         SLIDER_REF = [RAMP_CORNER[0], RAMP_CORNER[1] + RAMP_HEIGHT, 0]
         sliderMass = SLIDER**2 * DENSITY
         slider = Square(side_length=SLIDER, fill_opacity=0.5, color=YELLOWY)
