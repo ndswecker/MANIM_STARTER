@@ -64,7 +64,7 @@ class BaseBlock(Scene):
                                angle=-RAMP_ANGLES[1])
 
         # TEXT FORMULAE
-        theta = MathTex(r'\theta').move_to([RAMP_COORD[1][0] - RAMP_BASE/4 - 0.2 , RAMP_COORD[1][1] + 0.2,0])
+        thetaText = MathTex(r'\theta').move_to([RAMP_COORD[1][0] - RAMP_BASE/4 - 0.2 , RAMP_COORD[1][1] + 0.2,0])
         
         sliderFGVar = Variable(sliderFGy,
                                MathTex(r'F_g (mg)'),
@@ -99,6 +99,8 @@ class BaseBlock(Scene):
         thetaArc = Angle(line1, line2, radius=(RAMP_BASE/4))
         rampGroup = Group(ramp, thetaArc)
 
+        textGroup = Group(rampBaseText, rampHeightText, thetaText)
+
         # Place the slider to the far left ontop of ramp
         slider.move_to(SLIDER_REF, aligned_edge=DL)      
 
@@ -109,6 +111,9 @@ class BaseBlock(Scene):
                   Write(rampBaseText))
         self.wait(1)
 
+        dot = Dot(point=ramp.get_vertices()[0])
+        self.play(Create(dot))
+
         # Rotate the slider into the correct angle
         self.play(
             Rotate(
@@ -117,11 +122,12 @@ class BaseBlock(Scene):
                 about_point=[*SLIDER_REF]
             ),
             Create(thetaArc),
-            Write(theta)
+            Write(thetaText)
         )
         #self.add(theta)
         self.wait(1)
 
+        # Align each vector to the start at the center of the slider
         vctX.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(LEFT))
         vctD.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(LEFT + UP))
         vctD2.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(LEFT + UP))
@@ -129,7 +135,7 @@ class BaseBlock(Scene):
         vctN.move_to(slider.get_critical_point((0,0,0)), aligned_edge=(RIGHT + UP))
         vctGroup = Group(vctD, vctD2, vctY, vctN)
 
-        # Add Directional vectors and formula in sequence
+        # Add Directional vectors and formula in sequence with pauses
         self.play(Create(vctY), Write(sliderFGVar))
         self.wait(2)
         self.play(Create(vctN), Write(normalVar))
@@ -160,7 +166,7 @@ class BaseBlock(Scene):
         self.wait(2)
 
         # Rotate entire slider and ramp group to level and center ramp
-        systemGroup = Group(slider, rampGroup, vctGroup)
+        systemGroup = Group(slider, rampGroup, vctGroup, textGroup)
         newCorner = [RAMP_HEIGHT * math.sin(RAMP_ANGLES[1]), RAMP_CORNER[1], 0]
         self.play(
             Rotate(systemGroup,
@@ -168,6 +174,12 @@ class BaseBlock(Scene):
                 about_point=[*RAMP_CORNER])
         )
         self.play(
-            systemGroup.animate.shift([newCorner[0], 0, 0]))
-        self.wait(2)
+            systemGroup.animate.shift([newCorner[0], 0, 0]),
+        )
+        self.play(
+            Rotate(rampBaseText, -RAMP_ANGLES[1], about_point=rampBaseText.get_center()),
+            Rotate(rampHeightText, -RAMP_ANGLES[1], about_point=rampHeightText.get_center()),
+            Rotate(thetaText, -RAMP_ANGLES[1], about_point=thetaText.get_center())
+        )
+        self.wait(2)  
         
